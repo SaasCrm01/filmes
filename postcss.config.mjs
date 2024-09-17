@@ -1,5 +1,5 @@
-/** @type {import('postcss-load-config').Config} */
-module.exports = {
+// postcss.config.mjs
+export default {
   plugins: {
     tailwindcss: {},
   },
