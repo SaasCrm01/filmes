@@ -14,13 +14,15 @@ export default function MovieForm() {
   const [release, setRelease] = useState('');
   const [director, setDirector] = useState('');
   const [genreId, setGenreId] = useState('');
-  const [genres, setGenres] = useState<Genre[]>([]); // Adicionar o tipo 'Genre[]'
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [error, setError] = useState<string | null>(null); // Adicionar feedback de erro
+  const [success, setSuccess] = useState<string | null>(null); // Adicionar feedback de sucesso
 
   useEffect(() => {
     // Carregar gêneros
     const fetchGenres = async () => {
       const response = await fetch('/api/genre');
-      const data: Genre[] = await response.json(); // Definir o tipo 'Genre[]' para os dados
+      const data: Genre[] = await response.json();
       setGenres(data);
     };
     fetchGenres();
@@ -35,9 +37,11 @@ export default function MovieForm() {
     });
 
     if (!response.ok) {
-      alert('Erro ao cadastrar filme');
+      const errorData = await response.json();
+      setError(errorData.error); // Exibir mensagem de erro
     } else {
-      alert('Filme cadastrado com sucesso');
+      setSuccess('Filme cadastrado com sucesso');
+      setError(null); // Limpar erro em caso de sucesso
       setTitle('');
       setYear('');
       setRelease('');
@@ -100,6 +104,8 @@ export default function MovieForm() {
         </select>
       </div>
       <button type="submit">Cadastrar Filme</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
     </form>
   );
 }
