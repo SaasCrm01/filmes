@@ -1,63 +1,91 @@
-// src/app/api/movie/route.ts
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+'use client';
 
-// POST: Criar um novo filme
-export async function POST(req: Request) {
-  const { title, year, release, director, genreId } = await req.json();
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
-  if (!title || !year || !release || !director || !genreId) {
-    return NextResponse.json({ error: 'Todos os campos são obrigatórios' }, { status: 400 });
-  }
+// Esquema de validação para o formulário de filmes
+const schema = yup.object({
+  title: yup.string().required('Título é obrigatório'),
+  year: yup.number().required('Ano é obrigatório').min(1888, 'Ano inválido'),
+  release: yup.date().required('Data de lançamento é obrigatória'),
+  director: yup.string().required('Diretor é obrigatório'),
+  genreId: yup.string().required('Gênero é obrigatório'),
+}).required();
 
-  const movie = await prisma.movie.create({
-    data: {
-      title,
-      year: parseInt(year),
-      release: new Date(release),
-      director,
-      genreId: parseInt(genreId),
-    },
+export default function MovieForm() {
+  const [genres, setGenres] = useState([]);
+
+  // Configuração do React Hook Form com validação Yup
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
   });
 
-  return NextResponse.json(movie);
-}
+  useEffect(() => {
+    fetchGenres();
+  }, []);
 
-// GET: Listar todos os filmes
-export async function GET() {
-  const movies = await prisma.movie.findMany({
-    include: { genre: true },
-  });
-  return NextResponse.json(movies);
-}
+  const fetchGenres = async () => {
+    const response = await fetch('/api/genre');
+    const data = await response.json();
+    setGenres(data);
+  };
 
-// PUT: Atualizar um filme
-export async function PUT(req: Request) {
-  const { id, title, year, release, director, genreId } = await req.json();
+  const onSubmit = async (data) => {
+    const response = await fetch('/api/movie', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
 
-  if (!id || !title || !year || !release || !director || !genreId) {
-    return NextResponse.json({ error: "Todos os campos são obrigatórios" }, { status: 400 });
-  }
+    if (!response.ok) {
+      alert('Erro ao cadastrar filme');
+    } else {
+      alert('Filme cadastrado com sucesso');
+      reset();
+    }
+  };
 
-  const updatedMovie = await prisma.movie.update({
-    where: { id: Number(id) },
-    data: { title, year: Number(year), release: new Date(release), director, genreId: Number(genreId) },
-  });
-
-  return NextResponse.json(updatedMovie);
-}
-
-// DELETE: Excluir um filme
-export async function DELETE(req: Request) {
-  const { id } = await req.json();
-
-  if (!id) {
-    return NextResponse.json({ error: "ID é obrigatório" }, { status: 400 });
-  }
-
-  await prisma.movie.delete({
-    where: { id: Number(id) },
-  });
-
-  return NextResponse.json({ message: "Filme excluído com sucesso" });
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label>Título:</label>
+        <input type="text" {...register('title')} />
+        {errors.title && <span>{errors.title.message}</span>}
+      </div>
+      <div>
+        <label>Ano:</label>
+        <input type="number" {...register('year')} />
+        {errors.year && <span>{errors.year.message}</span>}
+      </div>
+      <div>
+        <label>Data de Lançamento:</label>
+        <input type="date" {...register('release')} />
+        {errors.release && <span>{errors.release.message}</span>}
+      </div>
+      <div>
+        <label>Diretor:</label>
+        <input type="text" {...register('director')} />
+        {errors.director && <span>{errors.director.message}</span>}
+      </div>
+      <div>
+        <label>Gênero:</label>
+        <select {...register('genreId')}>
+          <option value="">Selecione um gênero</option>
+          {genres.map((genre) => (
+            <option key={genre.id} value={genre.id}>
+              {genre.name}
+            </option>
+          ))}
+        </select>
+        {errors.genreId && <span>{errors.genreId.message}</span>}
+      </div>
+      <button type="submit">Cadastrar Filme</button>
+    </form>
+  );
 }

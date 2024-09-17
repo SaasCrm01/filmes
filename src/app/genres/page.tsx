@@ -1,17 +1,33 @@
-// src/app/genres/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 type Genre = {
   id: number;
   name: string;
 };
 
+// Esquema de validação com Yup
+const schema = yup.object().shape({
+  name: yup.string().required('Nome do gênero é obrigatório'),
+});
+
 export default function GenreList() {
   const [genres, setGenres] = useState<Genre[]>([]);
-  const [name, setName] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Configuração do react-hook-form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<{ name: string }>({
+    resolver: yupResolver(schema),
+  });
 
   useEffect(() => {
     fetchGenres();
@@ -23,26 +39,25 @@ export default function GenreList() {
     setGenres(data);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: { name: string }) => {
     const url = editingId ? `/api/genre` : '/api/genre';
     const method = editingId ? 'PUT' : 'POST';
 
     const response = await fetch(url, {
       method,
-      body: JSON.stringify(editingId ? { id: editingId, name } : { name }),
+      body: JSON.stringify(editingId ? { id: editingId, name: data.name } : { name: data.name }),
     });
 
     if (response.ok) {
       alert(editingId ? 'Gênero atualizado!' : 'Gênero cadastrado!');
       fetchGenres();
-      setName('');
+      reset();
       setEditingId(null);
     }
   };
 
   const handleEdit = (genre: Genre) => {
-    setName(genre.name);
+    reset({ name: genre.name });
     setEditingId(genre.id);
   };
 
@@ -61,16 +76,16 @@ export default function GenreList() {
   return (
     <div>
       <h1>Gêneros</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <input
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
           placeholder="Nome do gênero"
+          {...register('name')}
         />
+        {errors.name && <span>{errors.name.message}</span>}
         <button type="submit">{editingId ? 'Atualizar' : 'Cadastrar'}</button>
       </form>
-      
+
       <ul>
         {genres.map((genre) => (
           <li key={genre.id}>
