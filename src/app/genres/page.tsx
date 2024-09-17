@@ -1,99 +1,66 @@
 // src/app/genres/page.tsx
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 
-type Genre = {
-  id: number;
-  name: string;
-};
-
-export default function GenreList() {
-  const [genres, setGenres] = useState<Genre[]>([]);
-  const [name, setName] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null); // Adicionar feedback de erro
-  const [success, setSuccess] = useState<string | null>(null); // Adicionar feedback de sucesso
-
-  useEffect(() => {
-    fetchGenres();
-  }, []);
-
-  const fetchGenres = async () => {
-    const response = await fetch('/api/genre');
-    const data = await response.json();
-    setGenres(data);
-  };
+export default function GenreForm() {
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
-    if (name.trim() === '') {
-      setError('O nome do gênero é obrigatório');
+    if (!name.trim()) {
+      setError("O nome do gênero é obrigatório");
       return;
     }
 
-    const response = await fetch('/api/genre', {
-      method: editingId ? 'PUT' : 'POST',
-      body: JSON.stringify(editingId ? { id: editingId, name } : { name }),
-    });
+    try {
+      const res = await fetch("/api/genre", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
 
-    if (response.ok) {
-      setSuccess(editingId ? 'Gênero atualizado com sucesso!' : 'Gênero cadastrado com sucesso!');
-      setError(null); // Limpar erro em caso de sucesso
-      fetchGenres();
-      setName('');
-      setEditingId(null);
-    } else {
-      const errorData = await response.json();
-      setError(errorData.error); // Exibir mensagem de erro vinda do backend
-    }
-  };
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
 
-  const handleEdit = (genre: Genre) => {
-    setName(genre.name);
-    setEditingId(genre.id);
-  };
-
-  const handleDelete = async (id: number) => {
-    const response = await fetch('/api/genre', {
-      method: 'DELETE',
-      body: JSON.stringify({ id }),
-    });
-
-    if (response.ok) {
-      setSuccess('Gênero excluído com sucesso!');
-      setError(null);
-      fetchGenres();
-    } else {
-      setError('Erro ao excluir gênero');
+      setName("");
+      setSuccess("Gênero cadastrado com sucesso!");
+    } catch (err: any) {
+      setError(err.message || "Erro ao cadastrar gênero");
     }
   };
 
   return (
-    <div>
-      <h1>Gêneros</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Nome do gênero"
-        />
-        <button type="submit">{editingId ? 'Atualizar' : 'Cadastrar'}</button>
+    <div className="max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Cadastro de Gênero</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      {success && <p className="text-green-500">{success}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block font-bold mb-2">Nome do Gênero:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Cadastrar
+        </button>
       </form>
-      
-      <ul>
-        {genres.map((genre) => (
-          <li key={genre.id}>
-            {genre.name}
-            <button onClick={() => handleEdit(genre)}>Editar</button>
-            <button onClick={() => handleDelete(genre.id)}>Excluir</button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

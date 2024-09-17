@@ -1,111 +1,132 @@
 // src/app/movies/page.tsx
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-type Genre = {
+interface Genre {
   id: number;
   name: string;
-};
+}
 
 export default function MovieForm() {
-  const [title, setTitle] = useState('');
-  const [year, setYear] = useState('');
-  const [release, setRelease] = useState('');
-  const [director, setDirector] = useState('');
-  const [genreId, setGenreId] = useState('');
   const [genres, setGenres] = useState<Genre[]>([]);
-  const [error, setError] = useState<string | null>(null); // Adicionar feedback de erro
-  const [success, setSuccess] = useState<string | null>(null); // Adicionar feedback de sucesso
+  const [title, setTitle] = useState("");
+  const [year, setYear] = useState("");
+  const [release, setRelease] = useState("");
+  const [director, setDirector] = useState("");
+  const [genreId, setGenreId] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    // Carregar gêneros
-    const fetchGenres = async () => {
-      const response = await fetch('/api/genre');
-      const data: Genre[] = await response.json();
-      setGenres(data);
-    };
-    fetchGenres();
+    fetch("/api/genre")
+      .then((res) => res.json())
+      .then((data) => setGenres(data));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
-    const response = await fetch('/api/movie', {
-      method: 'POST',
-      body: JSON.stringify({ title, year, release, director, genreId }),
-    });
+    if (!title || !year || !release || !director || !genreId) {
+      setError("Todos os campos são obrigatórios");
+      return;
+    }
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      setError(errorData.error); // Exibir mensagem de erro
-    } else {
-      setSuccess('Filme cadastrado com sucesso');
-      setError(null); // Limpar erro em caso de sucesso
-      setTitle('');
-      setYear('');
-      setRelease('');
-      setDirector('');
-      setGenreId('');
+    try {
+      const res = await fetch("/api/movie", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, year, release, director, genreId }),
+      });
+
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      setTitle("");
+      setYear("");
+      setRelease("");
+      setDirector("");
+      setGenreId("");
+      setSuccess("Filme cadastrado com sucesso!");
+    } catch (err: any) {
+      setError(err.message || "Erro ao cadastrar filme");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Título:</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Ano:</label>
-        <input
-          type="number"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Data de Lançamento:</label>
-        <input
-          type="date"
-          value={release}
-          onChange={(e) => setRelease(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Diretor:</label>
-        <input
-          type="text"
-          value={director}
-          onChange={(e) => setDirector(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Gênero:</label>
-        <select
-          value={genreId}
-          onChange={(e) => setGenreId(e.target.value)}
-          required
+    <div className="max-w-lg mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Cadastro de Filme</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      {success && <p className="text-green-500">{success}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block font-bold mb-2">Título:</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-bold mb-2">Ano:</label>
+          <input
+            type="number"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-bold mb-2">Data de Lançamento:</label>
+          <input
+            type="date"
+            value={release}
+            onChange={(e) => setRelease(e.target.value)}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-bold mb-2">Diretor:</label>
+          <input
+            type="text"
+            value={director}
+            onChange={(e) => setDirector(e.target.value)}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-bold mb-2">Gênero:</label>
+          <select
+            value={genreId}
+            onChange={(e) => setGenreId(e.target.value)}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          >
+            <option value="">Selecione um gênero</option>
+            {genres.map((genre) => (
+              <option key={genre.id} value={genre.id}>
+                {genre.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
         >
-          <option value="">Selecione um gênero</option>
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.id}>
-              {genre.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <button type="submit">Cadastrar Filme</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-    </form>
+          Cadastrar
+        </button>
+      </form>
+    </div>
   );
 }
