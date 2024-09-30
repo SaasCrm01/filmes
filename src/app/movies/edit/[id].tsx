@@ -66,10 +66,10 @@ export default function EditMovie() {
     }
 
     try {
-      const res = await fetch(`/api/movie`, {
+      const res = await fetch(`/api/movie/${id}`, { // Corrigido para passar o id na URL
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, title, year, release, director, genreId }),
+        body: JSON.stringify({ title, year, release, director, genreId }),
       });
 
       if (!res.ok) {

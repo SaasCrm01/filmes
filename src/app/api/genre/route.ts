@@ -22,3 +22,4 @@ export async function GET() {
   const genres = await prisma.genre.findMany();
   return NextResponse.json(genres);
 }
+

@@ -19,7 +19,7 @@ export default function EditGenre() {
   // Carregar os dados do gênero pelo ID
   useEffect(() => {
     if (id) {
-      fetch(`/api/genre/${id}`)
+      fetch(`/api/genre/${id}`) // Corrigido para passar o id na URL
         .then((res) => res.json())
         .then((data: Genre) => setName(data.name))
         .catch(() => setError("Erro ao carregar gênero"));
@@ -38,10 +38,10 @@ export default function EditGenre() {
     }
 
     try {
-      const res = await fetch(`/api/genre`, {
+      const res = await fetch(`/api/genre/${id}`, { // Corrigido para passar o id na URL
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, name }),
+        body: JSON.stringify({ name }),
       });
 
       if (!res.ok) {
