@@ -3,6 +3,16 @@
 
 import { useState, useEffect } from "react";
 
+// Definir a interface para os filmes
+interface Movie {
+  id: number;
+  title: string;
+  year: number;
+  release: string;
+  director: string;
+  genreId: number;
+}
+
 interface Genre {
   id: number;
   name: string;
@@ -10,6 +20,7 @@ interface Genre {
 
 export default function MovieForm() {
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]); // Para listar filmes
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
   const [release, setRelease] = useState("");
@@ -18,12 +29,22 @@ export default function MovieForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Carregar gêneros para o select
   useEffect(() => {
     fetch("/api/genre")
       .then((res) => res.json())
-      .then((data) => setGenres(data));
+      .then((data: Genre[]) => setGenres(data));
   }, []);
 
+  // Carregar filmes para a listagem
+  useEffect(() => {
+    fetch("/api/movie")
+      .then((res) => res.json())
+      .then((data: Movie[]) => setMovies(data))  // Definir o tipo do dado recebido
+      .catch((err) => setError("Erro ao carregar filmes"));
+  }, []);
+
+  // Função para cadastrar um novo filme
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -47,6 +68,8 @@ export default function MovieForm() {
         throw new Error(await res.text());
       }
 
+      const newMovie = await res.json();
+      setMovies((prev) => [...prev, newMovie]); // Atualiza a lista com o novo filme
       setTitle("");
       setYear("");
       setRelease("");
@@ -55,6 +78,21 @@ export default function MovieForm() {
       setSuccess("Filme cadastrado com sucesso!");
     } catch (err: any) {
       setError(err.message || "Erro ao cadastrar filme");
+    }
+  };
+
+  // Função para excluir um filme
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch("/api/movie", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      setMovies((prev) => prev.filter((movie) => movie.id !== id));
+      setSuccess("Filme excluído com sucesso!");
+    } catch (err) {
+      setError("Erro ao excluir filme");
     }
   };
 
@@ -127,6 +165,28 @@ export default function MovieForm() {
           Cadastrar
         </button>
       </form>
+
+      {/* Listagem de Filmes */}
+      <h2 className="text-2xl font-bold mt-10">Listagem de Filmes</h2>
+      <ul>
+        {movies.map((movie) => (
+          <li key={movie.id} className="mb-4">
+            {movie.title} - {movie.year}
+            <button
+              onClick={() => handleDelete(movie.id)}
+              className="ml-4 bg-red-500 text-white p-2 rounded"
+            >
+              Excluir
+            </button>
+            <a
+              href={`/movies/edit/${movie.id}`}
+              className="ml-4 bg-blue-500 text-white p-2 rounded"
+            >
+              Atualizar
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

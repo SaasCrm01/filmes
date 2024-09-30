@@ -1,13 +1,29 @@
 // src/app/genres/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+// Definir a interface para o gênero
+interface Genre {
+  id: number;
+  name: string;
+}
 
 export default function GenreForm() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(""); // Para cadastrar o novo gênero
+  const [genres, setGenres] = useState<Genre[]>([]); // Para listar gêneros
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Função para carregar os gêneros da API
+  useEffect(() => {
+    fetch("/api/genre")
+      .then((res) => res.json())
+      .then((data: Genre[]) => setGenres(data))  // Definir o tipo do dado recebido
+      .catch((err) => setError("Erro ao carregar gêneros"));
+  }, []);
+
+  // Função para cadastrar um novo gênero
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -21,9 +37,7 @@ export default function GenreForm() {
     try {
       const res = await fetch("/api/genre", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
 
@@ -31,10 +45,27 @@ export default function GenreForm() {
         throw new Error(await res.text());
       }
 
+      const newGenre = await res.json();
+      setGenres((prev) => [...prev, newGenre]); // Atualiza a lista com o novo gênero
       setName("");
       setSuccess("Gênero cadastrado com sucesso!");
     } catch (err: any) {
       setError(err.message || "Erro ao cadastrar gênero");
+    }
+  };
+
+  // Função para excluir um gênero
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch("/api/genre", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      setGenres((prev) => prev.filter((genre) => genre.id !== id));
+      setSuccess("Gênero excluído com sucesso!");
+    } catch (err) {
+      setError("Erro ao excluir gênero");
     }
   };
 
@@ -61,6 +92,28 @@ export default function GenreForm() {
           Cadastrar
         </button>
       </form>
+
+      {/* Listagem de Gêneros */}
+      <h2 className="text-2xl font-bold mt-10">Listagem de Gêneros</h2>
+      <ul>
+        {genres.map((genre) => (
+          <li key={genre.id} className="mb-4">
+            {genre.name}
+            <button
+              onClick={() => handleDelete(genre.id)}
+              className="ml-4 bg-red-500 text-white p-2 rounded"
+            >
+              Excluir
+            </button>
+            <a
+              href={`/genres/edit/${genre.id}`}
+              className="ml-4 bg-blue-500 text-white p-2 rounded"
+            >
+              Atualizar
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
