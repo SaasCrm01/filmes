@@ -2,7 +2,7 @@
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import './globals.css'; // Certifique-se de que o arquivo de estilos globais esteja importado.
+import './globals.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-gray-100 text-gray-900">
         <Navbar />
-        <main className="container mx-auto p-4 bg-white shadow-md mt-6 rounded-lg">
+        <main className="container mx-auto p-6 mt-8 bg-white rounded-lg shadow-md">
           {children}
         </main>
         <Footer />

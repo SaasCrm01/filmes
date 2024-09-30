@@ -39,24 +39,24 @@ export default function GenreForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Cadastro de Gênero</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">{success}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6 mt-10">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Cadastro de Gênero</h2>
+      {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
+      {success && <p className="text-green-600 mb-4 text-center">{success}</p>}
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block font-bold mb-2">Nome do Gênero:</label>
+          <label className="block font-semibold text-gray-700 mb-2">Nome do Gênero:</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded"
+            className="border border-gray-300 p-3 w-full rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
         <button
           type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
         >
           Cadastrar
         </button>
