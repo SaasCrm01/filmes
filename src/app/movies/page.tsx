@@ -1,7 +1,7 @@
-// src/app/movies/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Definir a interface para os filmes
 interface Movie {
@@ -40,7 +40,7 @@ export default function MovieForm() {
   useEffect(() => {
     fetch("/api/movie")
       .then((res) => res.json())
-      .then((data: Movie[]) => setMovies(data))  // Definir o tipo do dado recebido
+      .then((data: Movie[]) => setMovies(data))
       .catch((err) => setError("Erro ao carregar filmes"));
   }, []);
 
@@ -97,57 +97,57 @@ export default function MovieForm() {
   };
 
   return (
-    <div className="max-w-lg mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Cadastro de Filme</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">{success}</p>}
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Cadastro de Filme</h2>
+      {error && <p className="text-danger">{error}</p>}
+      {success && <p className="text-success">{success}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-bold mb-2">Título:</label>
+        <div className="mb-3">
+          <label className="form-label">Título:</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded"
+            className="form-control"
             required
           />
         </div>
-        <div>
-          <label className="block font-bold mb-2">Ano:</label>
+        <div className="mb-3">
+          <label className="form-label">Ano:</label>
           <input
             type="number"
             value={year}
             onChange={(e) => setYear(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded"
+            className="form-control"
             required
           />
         </div>
-        <div>
-          <label className="block font-bold mb-2">Data de Lançamento:</label>
+        <div className="mb-3">
+          <label className="form-label">Data de Lançamento:</label>
           <input
             type="date"
             value={release}
             onChange={(e) => setRelease(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded"
+            className="form-control"
             required
           />
         </div>
-        <div>
-          <label className="block font-bold mb-2">Diretor:</label>
+        <div className="mb-3">
+          <label className="form-label">Diretor:</label>
           <input
             type="text"
             value={director}
             onChange={(e) => setDirector(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded"
+            className="form-control"
             required
           />
         </div>
-        <div>
-          <label className="block font-bold mb-2">Gênero:</label>
+        <div className="mb-3">
+          <label className="form-label">Gênero:</label>
           <select
             value={genreId}
             onChange={(e) => setGenreId(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded"
+            className="form-select"
             required
           >
             <option value="">Selecione um gênero</option>
@@ -158,32 +158,25 @@ export default function MovieForm() {
             ))}
           </select>
         </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-        >
+        <button type="submit" className="btn btn-primary w-100">
           Cadastrar
         </button>
       </form>
 
       {/* Listagem de Filmes */}
-      <h2 className="text-2xl font-bold mt-10">Listagem de Filmes</h2>
-      <ul>
+      <h2 className="text-center mt-5">Listagem de Filmes</h2>
+      <ul className="list-group">
         {movies.map((movie) => (
-          <li key={movie.id} className="mb-4">
+          <li key={movie.id} className="list-group-item d-flex justify-content-between align-items-center">
             {movie.title} - {movie.year}
-            <button
-              onClick={() => handleDelete(movie.id)}
-              className="ml-4 bg-red-500 text-white p-2 rounded"
-            >
-              Excluir
-            </button>
-            <a
-              href={`/movies/edit/${movie.id}`}
-              className="ml-4 bg-blue-500 text-white p-2 rounded"
-            >
-              Atualizar
-            </a>
+            <div>
+              <button onClick={() => handleDelete(movie.id)} className="btn btn-danger me-2">
+                Excluir
+              </button>
+              <a href={`/movies/edit/${movie.id}`} className="btn btn-primary">
+                Atualizar
+              </a>
+            </div>
           </li>
         ))}
       </ul>

@@ -1,7 +1,7 @@
-// src/app/genres/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Definir a interface para o gênero
 interface Genre {
@@ -19,7 +19,7 @@ export default function GenreForm() {
   useEffect(() => {
     fetch("/api/genre")
       .then((res) => res.json())
-      .then((data: Genre[]) => setGenres(data))  // Definir o tipo do dado recebido
+      .then((data: Genre[]) => setGenres(data))
       .catch((err) => setError("Erro ao carregar gêneros"));
   }, []);
 
@@ -70,47 +70,40 @@ export default function GenreForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6 mt-10">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Cadastro de Gênero</h2>
-      {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
-      {success && <p className="text-green-600 mb-4 text-center">{success}</p>}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block font-semibold text-gray-700 mb-2">Nome do Gênero:</label>
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Cadastro de Gênero</h2>
+      {error && <p className="text-danger">{error}</p>}
+      {success && <p className="text-success">{success}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="mb-3">
+          <label className="form-label">Nome do Gênero:</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 p-3 w-full rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="form-control"
             required
           />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
-        >
+        <button type="submit" className="btn btn-primary w-100">
           Cadastrar
         </button>
       </form>
 
       {/* Listagem de Gêneros */}
-      <h2 className="text-2xl font-bold mt-10">Listagem de Gêneros</h2>
-      <ul>
+      <h2 className="text-center mt-5">Listagem de Gêneros</h2>
+      <ul className="list-group">
         {genres.map((genre) => (
-          <li key={genre.id} className="mb-4">
+          <li key={genre.id} className="list-group-item d-flex justify-content-between align-items-center">
             {genre.name}
-            <button
-              onClick={() => handleDelete(genre.id)}
-              className="ml-4 bg-red-500 text-white p-2 rounded"
-            >
-              Excluir
-            </button>
-            <a
-              href={`/genres/edit/${genre.id}`}
-              className="ml-4 bg-blue-500 text-white p-2 rounded"
-            >
-              Atualizar
-            </a>
+            <div>
+              <button onClick={() => handleDelete(genre.id)} className="btn btn-danger me-2">
+                Excluir
+              </button>
+              <a href={`/genres/edit/${genre.id}`} className="btn btn-primary">
+                Atualizar
+              </a>
+            </div>
           </li>
         ))}
       </ul>
