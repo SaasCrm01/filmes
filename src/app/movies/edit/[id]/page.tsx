@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // Mude aqui para usar 'next/navigation'
+import { useParams } from 'next/navigation'; // Importando useParams
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Movie {
@@ -28,7 +29,7 @@ export default function EditMovie() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams(); // Usando useParams para obter o ID
 
   // Carregar os dados do filme pelo ID
   useEffect(() => {
@@ -66,10 +67,16 @@ export default function EditMovie() {
     }
 
     try {
-      const res = await fetch(`/api/movie/${id}`, { // Corrigido para passar o id na URL
+      const res = await fetch(`/api/movie/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, year, release, director, genreId }),
+        body: JSON.stringify({
+          title,
+          year: Number(year),
+          release,
+          director,
+          genreId: Number(genreId),
+        }),
       });
 
       if (!res.ok) {
@@ -77,7 +84,7 @@ export default function EditMovie() {
       }
 
       setSuccess("Filme atualizado com sucesso!");
-      router.push("/movies"); // Redirecionar para a lista de filmes após a atualização
+      router.push("/movies"); // Redirecionando após a atualização
     } catch (err: any) {
       setError(err.message || "Erro ao atualizar filme");
     }

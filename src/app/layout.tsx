@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="d-flex bg-light">
         <Sidebar />
         <div className="main-content p-4 flex-grow-1">
-          <Navbar />
+          {/* <Navbar /> */}
           <main className="container mt-4 bg-white p-4 rounded shadow">
             {children}
           </main>

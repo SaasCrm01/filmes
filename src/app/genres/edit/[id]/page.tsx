@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useParams, useRouter } from "next/navigation"; // useParams para parâmetros dinâmicos, useRouter para navegação
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Genre {
@@ -13,13 +13,14 @@ export default function EditGenre() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const router = useRouter();
-  const { id } = router.query;
+  
+  const { id } = useParams(); // Obter o ID diretamente da URL
+  const router = useRouter();  // Ainda pode ser usado para redirecionar
 
   // Carregar os dados do gênero pelo ID
   useEffect(() => {
     if (id) {
-      fetch(`/api/genre/${id}`) // Corrigido para passar o id na URL
+      fetch(`/api/genre/${id}`)
         .then((res) => res.json())
         .then((data: Genre) => setName(data.name))
         .catch(() => setError("Erro ao carregar gênero"));
@@ -38,7 +39,7 @@ export default function EditGenre() {
     }
 
     try {
-      const res = await fetch(`/api/genre/${id}`, { // Corrigido para passar o id na URL
+      const res = await fetch(`/api/genre/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
