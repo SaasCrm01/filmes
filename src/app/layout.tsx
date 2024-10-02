@@ -1,5 +1,5 @@
 import Navbar from './components/Navbar';
-import Sidebar from './components/Sidebar';  // Criamos uma sidebar para a dashboard
+import Sidebar from './components/Sidebar'; 
 import './globals.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

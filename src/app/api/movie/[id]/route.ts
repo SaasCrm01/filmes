@@ -31,10 +31,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       where: { id: Number(id) },
       data: {
         title,
-        year: Number(year), // Convertendo year para Number
-        release: new Date(release), // Convertendo release para Date
+        year: Number(year), // aqui eu convertir idade para numero
+        release: new Date(release), // aqui eu converti para data
         director,
-        genreId: Number(genreId), // Convertendo genreId para Number
+        genreId: Number(genreId), // aqui eu converti o meu genreID para numero também
       },
     });
   

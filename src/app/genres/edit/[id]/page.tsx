@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation"; // useParams para parâmetros dinâmicos, useRouter para navegação
+import { useParams, useRouter } from "next/navigation";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Genre {
@@ -14,10 +14,10 @@ export default function EditGenre() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   
-  const { id } = useParams(); // Obter o ID diretamente da URL
-  const router = useRouter();  // Ainda pode ser usado para redirecionar
+  const { id } = useParams(); 
+  const router = useRouter();
 
-  // Carregar os dados do gênero pelo ID
+  
   useEffect(() => {
     if (id) {
       fetch(`/api/genre/${id}`)
@@ -27,7 +27,7 @@ export default function EditGenre() {
     }
   }, [id]);
 
-  // Função para atualizar o gênero
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -50,7 +50,7 @@ export default function EditGenre() {
       }
 
       setSuccess("Gênero atualizado com sucesso!");
-      router.push("/genres"); // Redirecionar para a lista de gêneros após a atualização
+      router.push("/genres"); 
     } catch (err: any) {
       setError(err.message || "Erro ao atualizar gênero");
     }

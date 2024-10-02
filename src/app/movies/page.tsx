@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Definir a interface para os filmes
+
 interface Movie {
   id: number;
   title: string;
@@ -20,7 +20,7 @@ interface Genre {
 
 export default function MovieForm() {
   const [genres, setGenres] = useState<Genre[]>([]);
-  const [movies, setMovies] = useState<Movie[]>([]); // Para listar filmes
+  const [movies, setMovies] = useState<Movie[]>([]); 
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
   const [release, setRelease] = useState("");
@@ -29,14 +29,14 @@ export default function MovieForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Carregar gêneros para o select
+  
   useEffect(() => {
     fetch("/api/genre")
       .then((res) => res.json())
       .then((data: Genre[]) => setGenres(data));
   }, []);
 
-  // Carregar filmes para a listagem
+  
   useEffect(() => {
     fetch("/api/movie")
       .then((res) => res.json())
@@ -44,7 +44,7 @@ export default function MovieForm() {
       .catch((err) => setError("Erro ao carregar filmes"));
   }, []);
 
-  // Função para cadastrar um novo filme
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -69,7 +69,7 @@ export default function MovieForm() {
       }
 
       const newMovie = await res.json();
-      setMovies((prev) => [...prev, newMovie]); // Atualiza a lista com o novo filme
+      setMovies((prev) => [...prev, newMovie]);
       setTitle("");
       setYear("");
       setRelease("");
@@ -81,7 +81,7 @@ export default function MovieForm() {
     }
   };
 
-  // Função para excluir um filme
+  
   const handleDelete = async (id: number) => {
     try {
       await fetch("/api/movie", {
@@ -163,7 +163,7 @@ export default function MovieForm() {
         </button>
       </form>
 
-      {/* Listagem de Filmes */}
+      
       <h2 className="text-center mt-5">Listagem de Filmes</h2>
       <ul className="list-group">
         {movies.map((movie) => (
@@ -173,7 +173,7 @@ export default function MovieForm() {
               <button onClick={() => handleDelete(movie.id)} className="btn btn-danger me-2">
                 Excluir
               </button>
-              <a href={`/movies/edit/${movie.id}`} className="btn btn-primary">
+              <a href={`/movies/edit/${movie.id}`} className=" btn btn-secondary">
                 Atualizar
               </a>
             </div>

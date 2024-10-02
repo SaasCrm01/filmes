@@ -10,3 +10,38 @@ body {
 main {
   @apply container mx-auto p-6 mt-8 bg-white rounded-lg shadow-md;
 }
+
+
+
+
+.btn-primary {
+  background-color: #01FF5F;
+  border-color: #01FF5F;
+  color: #000000; 
+}
+
+.btn-primary:hover {
+  background-color: #00e35f;
+  border-color: #00e35f;
+}
+
+
+.btn-secondary {
+  background-color: #01FF5F;
+  color: #000000;
+  border-color: #01FF5F;
+}
+
+.btn-secondary:hover {
+  background-color: #e6e6e6;
+  border-color: #e6e6e6;
+}
+
+
+a {
+  color: #01FF5F;
+}
+
+a:hover {
+  color: #00e35f;
+}

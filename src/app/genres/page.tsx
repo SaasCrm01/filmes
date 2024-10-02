@@ -3,19 +3,19 @@
 import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Definir a interface para o gênero
+
 interface Genre {
   id: number;
   name: string;
 }
 
 export default function GenreForm() {
-  const [name, setName] = useState(""); // Para cadastrar o novo gênero
-  const [genres, setGenres] = useState<Genre[]>([]); // Para listar gêneros
+  const [name, setName] = useState(""); 
+  const [genres, setGenres] = useState<Genre[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Função para carregar os gêneros da API
+  
   useEffect(() => {
     fetch("/api/genre")
       .then((res) => res.json())
@@ -23,7 +23,7 @@ export default function GenreForm() {
       .catch((err) => setError("Erro ao carregar gêneros"));
   }, []);
 
-  // Função para cadastrar um novo gênero
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -46,7 +46,7 @@ export default function GenreForm() {
       }
 
       const newGenre = await res.json();
-      setGenres((prev) => [...prev, newGenre]); // Atualiza a lista com o novo gênero
+      setGenres((prev) => [...prev, newGenre]);
       setName("");
       setSuccess("Gênero cadastrado com sucesso!");
     } catch (err: any) {
@@ -89,8 +89,6 @@ export default function GenreForm() {
           Cadastrar
         </button>
       </form>
-
-      {/* Listagem de Gêneros */}
       <h2 className="text-center mt-5">Listagem de Gêneros</h2>
       <ul className="list-group">
         {genres.map((genre) => (
